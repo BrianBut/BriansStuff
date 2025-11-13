@@ -1,0 +1,6 @@
+DB_URL= "////home/brian/databases/BFfile.db"
+BODB_URL= "/home/brian/Pictures/bodb/"
+SECRET_KEY= "poegranitewithcheese"
+SALT= "3 Fishes"
+ADMIN_PASSWORD= "top secret"
+ADMIN_EMAIL= "adam@schoolhouse.byton"
