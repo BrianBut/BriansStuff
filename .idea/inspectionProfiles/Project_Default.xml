@@ -1,0 +1,40 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="anyio" />
+          <option value="apsw" />
+          <option value="apswutils" />
+          <option value="beautifulsoup4" />
+          <option value="certifi" />
+          <option value="click" />
+          <option value="fastcore" />
+          <option value="fastlite" />
+          <option value="h11" />
+          <option value="httpcore" />
+          <option value="httptools" />
+          <option value="httpx" />
+          <option value="idna" />
+          <option value="itsdangerous" />
+          <option value="oauthlib" />
+          <option value="packaging" />
+          <option value="python-dateutil" />
+          <option value="python-dotenv" />
+          <option value="python-fasthtml" />
+          <option value="python-multipart" />
+          <option value="PyYAML" />
+          <option value="six" />
+          <option value="sniffio" />
+          <option value="soupsieve" />
+          <option value="starlette" />
+          <option value="uvicorn" />
+          <option value="uvloop" />
+          <option value="watchfiles" />
+          <option value="websockets" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

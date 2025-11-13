@@ -1,4 +1,4 @@
-DB_URL= "////home/brian/databases/BFfile.db"
+DB_URL= "////home/brian/databases/BFPW.db"
 BODB_URL= "/home/brian/Pictures/bodb/"
 SECRET_KEY= "poegranitewithcheese"
 SALT= "3 Fishes"
