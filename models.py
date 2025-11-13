@@ -17,6 +17,11 @@ class User(BaseModel):
     creation_date = DateField(default=datetime.now)
     last_login = DateTimeField(null=True)
 
+    @classmethod
+    def get_as_dict(cls, expr):
+        query = cls.select().where(expr).dicts()
+        return query.get()
+
 db.connect()
 db.create_tables([User])
 

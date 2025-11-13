@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from functools import wraps
 import hashlib
 #from database import db, users
+from models import User
 from config import SALT
 import logging
 
@@ -15,6 +16,7 @@ def get_password_hash(plain_password):
     hashed_password = hashlib.sha256(pwd_salt.encode())
     return hashed_password.hexdigest()
 
+'''
 # Creating a basic authentication decorator
 def basic_auth(f):
     @wraps(f)
@@ -23,6 +25,7 @@ def basic_auth(f):
             return Response('Not Authorized', status_code=401)
         return f(session, *args, **kwargs)
     return wrapper
+'''
 
 # comvert a datetime string in iso format to a date string
 def datestring(dts):
@@ -52,12 +55,10 @@ def common_header1(nav_items: list[str], title, session):
 # Version with title in the nav
 def common_header(nav_items: list[str], title, session):
     buttons= [(A(Button(item), href=f"/{item}/".lower())) for item in nav_items]
-    if session.get('auth'):
-        try:
-            current_user = users[session.get('auth')]
-        except:
-            current_user = '?'
-        buttons.append(A(Button(current_user['name']), href='/logout'))
+    logging.info("In common_header session['auth'] is {}".format(session['auth']))
+    query = User.select().where(User.name == session['auth'])
+    if query.exists():
+        buttons.append(A(Button(session['auth']), href='/logout'))
     else:
         buttons.append(A(Button('Login'), href='/login'))
     buttons.insert(0, H1(title))

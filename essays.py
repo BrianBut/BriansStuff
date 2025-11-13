@@ -1,5 +1,5 @@
 from fasthtml.common import *
-from components import common_header, logging, basic_auth, AifEqual, ButtonifLoggedIn, AifEqualToggle
+from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle
 from datetime import datetime, timezone, date
 '''
 essays = db.t.essays

@@ -6,14 +6,13 @@ from essays import rt as rt_essay
 #from todos import todos, rt as rt_todo
 from fasthtml.common import *
 from datetime import datetime, timezone
-from components import common_header, basic_auth, logging, datestring, get_password_hash
+from components import common_header, logging, datestring, get_password_hash
 
 #create admin user if he does not exist
 try:
     User.create(name='Admin', email=ADMIN_EMAIL, password=get_password_hash(ADMIN_PASSWORD), fullname='Administrator')
 except:
     pass
-
 
 # The `before` function is a *Beforeware* function. These are functions that run before a route handler is called.
 def before(req, sess):
@@ -55,10 +54,11 @@ def login():
 
 @rt
 def send_login(name:str, pwd:str, sess):
-    logging.info("in send_login: name is {}, pwd is {}".format(name,pwd))
-    if not name or not pwd: return login_redir
+    logging.info("in send_login: name is {}, pwd is {}, sess is {}".format(name,pwd, sess))
+    #if not name or not pwd: return login_redir
     query = User.select().where(User.name == name)
     if not query.exists():
+        logging.info("name {} not recognised".format(name))
         return Redirect('/register') # name not recognised
     logging.info("query is {}".format(query))
     u= query.get()
@@ -73,10 +73,10 @@ def send_login(name:str, pwd:str, sess):
            .execute())
 
     logging.info("res is {}".format(res))
-    #sess['auth'] = u['name']
+    sess['auth'] = name
+    logging.info("set sess to 'auth': {}".format(sess['auth']))
     return RedirectResponse('/', status_code=303)
 
-'''
 @rt
 def register():
     frm= Form(action=send_register, method='post')(
@@ -94,20 +94,22 @@ def register():
 def send_register(name:str, pword:str, email:str, fullname:str):
     if not name or not pword or not email or not fullname:
         return login_redir
-    try: u= users[name]
-    except NotFoundError: (
-        users.insert(name=name, password=get_password_hash(pword), email=email, fullname=fullname, creation_date=datetime.now(timezone.utc), last_login=datetime.min),
+    query = User.select().where(User.name == name)
+    if query.exists():
+        print("We already have a user with that name")
+        return RedirectResponse('/login', status_code=303)
+    else:
+        User.create(name=name, email=email, password=get_password_hash(pword), fullname=fullname, creationDate=datetime.now(timezone.utc))
         logging.info('user {} inserted to database'.format(name))
-    )
-    return RedirectResponse('/login', status_code=303)
-'''
+    return login_redir
+
 @rt("/home")
 @rt("/") 
 def index(session):
     nav_items=['Essays'] # also 'Birds' etc
     title="Brian's Stuff"
-    logging.info("in index session.get('auth') is {}".format(session.get('auth')))
-    if session.get('auth') == 1:
+    logging.info("in index session.get('auth') is {}".format(session['auth']))
+    if session['auth'] == 'Admin':
         nav_items.append('Todos')
     #eys = db.q("SELECT * FROM essays WHERE published=1 ORDER BY last_edited")
     eys= []
