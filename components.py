@@ -55,10 +55,10 @@ def common_header1(nav_items: list[str], title, session):
 # Version with title in the nav
 def common_header(nav_items: list[str], title, session):
     buttons= [(A(Button(item), href=f"/{item}/".lower())) for item in nav_items]
-    logging.info("In common_header session['auth'] is {}".format(session['auth']))
-    query = User.select().where(User.name == session['auth'])
+    logging.info("In common_header session.get('auth') is {}".format(session.get('auth')))
+    query = User.select().where(User.name == session.get('auth'))
     if query.exists():
-        buttons.append(A(Button(session['auth']), href='/logout'))
+        buttons.append(A(Button(session.get('auth'), href='/logout')))
     else:
         buttons.append(A(Button('Login'), href='/login'))
     buttons.insert(0, H1(title))

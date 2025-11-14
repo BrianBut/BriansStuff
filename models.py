@@ -29,9 +29,13 @@ class Essay(BaseModel):
     preamble=TextField()
     content=TextField()
     authorname = CharField()
+    author_fullname=CharField()
     creation_date=DateField(default=datetime.now(timezone.utc))
     last_edited=DateField(null=True)
     published=BooleanField(default=False)
+
+    class Meta:
+        indexes = ((('title', 'authorname'), True),)
 
 db.connect()
 db.create_tables([User, Essay])

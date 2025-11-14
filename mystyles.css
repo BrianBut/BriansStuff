@@ -1,0 +1,16 @@
+form textarea#summary {
+  height: 200px;
+}
+
+form textarea#content {
+  height: 300px;
+}
+
+/*
+button {
+    width: 15 em;
+    padding: 6px 24px;
+    background-color: #e7e7e7;
+    color: black;
+}
+*/

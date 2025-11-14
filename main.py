@@ -139,8 +139,7 @@ def index(session):
         )
     )
     return cts
-'''
-'''
+
 @app.get("/logout")
 def logout(session):
     if session:
