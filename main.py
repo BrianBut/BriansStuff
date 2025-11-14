@@ -108,9 +108,13 @@ def send_register(name:str, pword:str, email:str, fullname:str):
 def index(session):
     nav_items=['Essays'] # also 'Birds' etc
     title="Brian's Stuff"
+    try:
+        if session['auth'] == 'Admin':
+            nav_items.append('Todos')
+    except:
+        session['auth'] = ' '
     logging.info("in index session.get('auth') is {}".format(session['auth']))
-    if session['auth'] == 'Admin':
-        nav_items.append('Todos')
+
     #eys = db.q("SELECT * FROM essays WHERE published=1 ORDER BY last_edited")
     eys= []
     essay_links= []

@@ -1,5 +1,5 @@
 from peewee import *
-from datetime import datetime
+from datetime import datetime, timezone
 from config import DB_URL, ADMIN_EMAIL, ADMIN_PASSWORD
 
 db = SqliteDatabase(DB_URL)
@@ -17,16 +17,22 @@ class User(BaseModel):
     creation_date = DateField(default=datetime.now)
     last_login = DateTimeField(null=True)
 
-    @classmethod
+    @classmethod        # untested
     def get_as_dict(cls, expr):
         query = cls.select().where(expr).dicts()
         return query.get()
 
-db.connect()
-db.create_tables([User])
+# I've opted for as string for authorname to minimise the number of queries in the homepage
+class Essay(BaseModel):
+    essay_id = AutoField()
+    title = CharField()
+    preamble=TextField()
+    content=TextField()
+    authorname = CharField()
+    creation_date=DateField(default=datetime.now(timezone.utc))
+    last_edited=DateField(null=True)
+    published=BooleanField(default=False)
 
-#create admin user if he does not exist
-#try:
-#    User.create(name='Admin', email=ADMIN_EMAIL, password=ADMIN_PASSWORD, fullname='Administrator')
-#except:
-#    pass
+db.connect()
+db.create_tables([User, Essay])
+

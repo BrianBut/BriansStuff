@@ -1,36 +1,22 @@
 from fasthtml.common import *
 from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle
+from models import Essay
 from datetime import datetime, timezone, date
-'''
-essays = db.t.essays
 
-essays.create(
-    essay_id=int,
-    title=str,
-    preamble=str,
-    content=str,
-    authorname=str,
-    author_fullname=str,
-    creation_date=str,
-    last_edited=str,
-    published=bool,
-    not_null={'title', 'authorname', 'author_fullname', 'creation_date', 'published'},
-    pk='essay_id',
-    transform=True
-)
-'''
-# Altering to simplify by making /essays/ show only users essays
 rt = APIRouter(prefix='/essays')
-'''
+
 @rt("/")
 def index(session):
     logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
     nav_items= ['Home', 'Essays']
-    eys= db.q("SELECT * FROM essays WHERE authorname=? ORDER BY last_edited",(session.get('auth'),))
+    query = Essay.select().where(Essay.authorname == session['auth'])
+
+    #TODO
+    #eys= db.q("SELECT * FROM essays WHERE authorname=? ORDER BY last_edited",(session.get('auth'),))
     essay_links= [ Li(Grid(A(ey['title'], href='/essays/essay/{}'.format(ey['essay_id'])), ey['author_fullname'],
         AifEqual( session.get('auth'), ey['authorname'], 'Edit', href='/essays/edit_essay/{}'.format(ey['essay_id'])),
         AifEqualToggle(session.get('auth'), ey['authorname'], 'hide', 'publish', ey['published'], href='/essays/toggle-essay-published/{}'.format(ey['essay_id'])),
-        )) for ey in eys]
+        )) for ey in query]
     logging.info("In essays/index auth is {}.".format(session.get('auth')))
     return Container(
         common_header(nav_items, 'Writings', session),
@@ -69,7 +55,7 @@ def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str
     #ey= db.q(query)[0]
     #ey=essays.selectone('title=?', (title,))
     return RedirectResponse('essays/{}'.format(ey['essay_id']))
-
+'''
 #@basic_auth
 @rt('/toggle-essay-published/{essay_id}')
 def get(essay_id:int):
