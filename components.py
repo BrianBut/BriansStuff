@@ -1,9 +1,8 @@
-# File for reusable FastHtml components
+# File for shared functions and reusable FastHtml components
 from fasthtml.common import *
 from datetime import datetime, timezone
 from functools import wraps
 import hashlib
-#from database import db, users
 from models import User
 from config import SALT
 import logging
@@ -33,35 +32,17 @@ def datestring(dts):
     date=dt.date()
     return date.strftime("%a %d %b %Y")
 
-# The original common header
-def common_header1(nav_items: list[str], title, session):
-    if session.get('auth'):
-        pass
-        #current_user=users[session.get('auth')]
-    else:
-        current_user=None
-    #logger.info("in 'common header' current user is {}".format(current_user))
-    buttons= [(A(Button(item), href=f"/{item}/".lower())) for item in nav_items]
-    if current_user:
-        buttons.append(A(Button(current_user['username']), href='/logout'))
-    else:
-        buttons.append(A(Button('Login'), href='/login'))
-    return Container( # for margins
-        Nav( *buttons ),
-        #Br(),
-        Header(style='text-align: center')( H1(title) )
-    )
-
 # Version with title in the nav
 def common_header(nav_items: list[str], title, session):
     buttons= [(A(Button(item), href=f"/{item}/".lower())) for item in nav_items]
     logging.info("In common_header session.get('auth') is {}".format(session.get('auth')))
     query = User.select().where(User.name == session.get('auth'))
     if query.exists():
-        buttons.append(A(Button(session.get('auth'), href='/logout')))
+        buttons.append(A(Button(session.get('auth')), href='/logout'))
     else:
         buttons.append(A(Button('Login'), href='/login'))
     buttons.insert(0, H1(title))
+    logging.info("In common_header buttons are {}".format(buttons))
     return Container( Nav( *buttons ),)
 
 def AifEqual( var1, var2, title, href ):
