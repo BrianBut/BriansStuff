@@ -22,7 +22,7 @@ class User(BaseModel):
         query = cls.select().where(expr).dicts()
         return query.get()
 
-# I've opted for as string for authorname to minimise the number of queries in the homepage
+# I've opted for a string for authorname to minimise the number of queries in the homepage
 class Essay(BaseModel):
     essay_id = AutoField()
     title = CharField()
@@ -37,6 +37,15 @@ class Essay(BaseModel):
     class Meta:
         indexes = ((('title', 'authorname'), True),)
 
+
+class Todo(BaseModel):
+    id = AutoField()
+    title = CharField(unique=True)
+    description = TextField(default='?')
+    comments = TextField(null=True)
+    notified = DateTimeField(default=datetime.now(timezone.utc))
+    done = DateTimeField(default=datetime.min)
+
 db.connect()
-db.create_tables([User, Essay])
+db.create_tables([User, Essay, Todo])
 

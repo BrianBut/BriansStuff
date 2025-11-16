@@ -3,7 +3,7 @@ from models import User
 #from database import db, users, get_password_hash
 from config import ADMIN_PASSWORD, ADMIN_EMAIL
 from essays import rt as rt_essay
-#from todos import todos, rt as rt_todo
+from todos import rt as rt_todo
 from fasthtml.common import *
 from datetime import datetime, timezone
 from components import common_header, logging, datestring, get_password_hash
@@ -30,7 +30,7 @@ app, rt = fast_app(
     )
 
 rt_essay.to_app(app)
-#rt_todo.to_app(app)
+rt_todo.to_app(app)
 
 # Any Starlette response class can be returned by a FastHTML route handler.
 login_redir = RedirectResponse('/login', status_code=303)

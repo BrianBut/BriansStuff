@@ -103,24 +103,23 @@ def send_edit_essay_header( essay_id:int, title:str, preamble:str):
 @rt("/edit-essay-content/{essay_id}")
 def get(essay_id: int):
     essay = Essay.get(essay_id=essay_id)
-    logging.info('In edit_essay_header get {}'.format(essay))
+    logging.info('In edit_essay_content get {}'.format(essay))
     return (Titled('Edit Essay Content',
-        Form(
+        Form(action='send-essay-content', method='post')(
         Textarea(essay.content, name='content', rows=20),
-        #Button("Submit", type="submit", hx_post="essays/edit-essay-content/{}".format(essay_id)),
-        Button("Submit", type="submit", method="post"),
+        Button("Submit Changes"),
         Span(id="error", style="color:red"),),
         ))
 
-@rt("/edit-essay-content/{essay_id}")
-def post(essay_id:int, content:str):
+@rt
+def send_essay_content(essay_id:int, content:str):
     essay = Essay.get(essay_id=essay_id)
     essay.content= content
     essay.last_edited= datetime.now(timezone.utc)
     logging.info('about to upsert essay {}'.format(essay.name))
     #essays.upsert(ess)
     essay.save()
-    return HttpHeader('HX-Redirect', '/essay/{}'.format(essay_id))
+    return RedirectResponse('/essays/essay{}'.format(essay_id), status_code=303)
 
 if __name__ == '__main__':
     pass
