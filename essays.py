@@ -99,27 +99,28 @@ def send_edit_essay_header( essay_id:int, title:str, preamble:str):
     essay.save()
     return RedirectResponse( url='essays/essay/{}'.format(essay_id), status_code=303)
 
-
+#OK
 @rt("/edit-essay-content/{essay_id}")
 def get(essay_id: int):
     essay = Essay.get(essay_id=essay_id)
     logging.info('In edit_essay_content get {}'.format(essay))
-    return (Titled('Edit Essay Content',
-        Form(action='send-essay-content', method='post')(
+    form=Form(action=send_essay_content, method='post')(
+        Hidden(essay_id, name='essay_id'),
         Textarea(essay.content, name='content', rows=20),
         Button("Submit Changes"),
-        Span(id="error", style="color:red"),),
-        ))
+        Span(id="error", style="color:red"),
+        )
+    return (Titled('Edit Essay Content', form))
 
+#OK
 @rt
 def send_essay_content(essay_id:int, content:str):
-    essay = Essay.get(essay_id=essay_id)
+    essay = Essay.get_by_id(essay_id)
     essay.content= content
     essay.last_edited= datetime.now(timezone.utc)
-    logging.info('about to upsert essay {}'.format(essay.name))
-    #essays.upsert(ess)
+    logging.info('about to save essay {}'.format(essay_id))
     essay.save()
-    return RedirectResponse('/essays/essay{}'.format(essay_id), status_code=303)
+    return RedirectResponse('/essays/essay/{}'.format(essay_id), status_code=303)
 
 if __name__ == '__main__':
     pass
