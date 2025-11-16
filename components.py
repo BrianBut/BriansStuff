@@ -1,6 +1,6 @@
 # File for shared functions and reusable FastHtml components
 from fasthtml.common import *
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from functools import wraps
 import hashlib
 from models import User
@@ -28,9 +28,8 @@ def basic_auth(f):
 
 # comvert a datetime string in iso format to a date string
 def datestring(dts):
-    dt= datetime.fromisoformat(dts)
-    date=dt.date()
-    return date.strftime("%a %d %b %Y")
+    dt= date.strftime(dts)
+    return dt.strftime("%a %d %b %Y")
 
 # Version with title in the nav
 def common_header(nav_items: list[str], title, session):

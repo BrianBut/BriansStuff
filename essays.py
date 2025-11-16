@@ -10,9 +10,9 @@ def index(session):
     logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
     nav_items= ['Home', 'Essays']
     essays = Essay.select().where(Essay.authorname == session.get('auth')) # TODO ORDER BY last_edited",
-    essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.essay_id)), essay.author_fullname,
+    essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
         #AifEqual( session.get('auth'), essay.authorname, 'Edit', href='/essays/edit_essay/{}'.format(essay.essay_id)),
-        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published, href='/essays/toggle-essay-published/{}'.format(essay.essay_id)),
+        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published, href='/essays/toggle-essay-published/{}'.format(essay.id)),
         )) for essay in essays]
     return Container(
         common_header(nav_items, 'My Writings', session),
@@ -39,49 +39,36 @@ def new_essay(session):
 def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str):
     logging.info('in send_new_essay')
     essay= Essay(title=title, preamble=preamble, content='', authorname=authorname, author_fullname=author_fullname)
-    essay.save()
-    # recover the id of the newly created record
-    essay= Essay.select().where((Essay.title == title) and (Essay.authorname == authorname))
-    assert(essay)
-    logging.info('in send_new_essay, essay is {}'.format(essay.get()))
-    return RedirectResponse('essay/{}'.format(essay.get()))
+    try:
+        essay.save()
+    except:
+        logging.error("Possibly a duplicate title and authorname")
+        return RedirectResponse('new_essay')
+    logging.info('in send_new_essay, essay is {}'.format(essay.id))
+    return Redirect('essay/{}'.format(essay.id))
 
-@rt('/toggle-essay-published/{essay_id}')
-def get(essay_id:int):
-    essay= Essay.get_by_id(essay_id)
+@rt('/toggle-essay-published/{id}')
+def get(id:int):
+    essay= Essay.get_by_id(id)
     essay.published= not(essay.published)
-    essay.save()
-    return Redirect('/essays')
+    essay.save() #OK
+    return RedirectResponse('/essays')
 
-@rt('/essay/{essay_id}') # on /essays/essay/10
-def get(essay_id:int, session):
+@rt('/essay/{id}')
+def get(id:int, session):
     nav_items = ['Home', 'Essays']
-    essay = Essay.get(essay_id=essay_id)
+    essay = Essay.get(id=id)
     logging.info('in essay, essay is {}'.format(essay))
     if session.get('auth'):
         cts= Container(common_header(nav_items, essay.title, session),
         Hr(Div(Small(essay.preamble))),Hr(),
         Div(essay.content, cls="marked"),
-        Grid(A('Edit Preamble', href='/essays/edit-essay-header/{}'.format(essay_id)), A('Edit Content', href='/essays/edit-essay-content/{}'.format(essay_id))))
+        Grid(A('Edit Preamble', href='/essays/edit-essay-header/{}'.format(essay.id)), A('Edit Content', href='/essays/edit-essay-content/{}'.format(essay.id))))
     else:
         cts = Container(common_header(nav_items, essay.title, session),
         Hr(Small(essay['preamble'])),
         Hr(essay['content'], cls="marked"))
     return (cts)
-
-#REDUNDANT
-'''
-@rt("/edit_essay/{essay_id}")
-def get(essay_id:int):  # Dont forget to set type
-    ey = Essay.get(essay_id=essay_id)
-    logging.info("result is {}".format(ey))
-    return Container(H2(ey.title, H5(ey.preamble,
-        P(ey.content),
-        Grid(
-        A('Edit Essay Header', href='/essays/edit-essay-header/{}'.format(essay_id)),
-            A('Edit Essay Content', href='/essays/edit-essay-content/{}'.format(essay_id)),))
-    ))
-'''
 
 #OK
 @rt("/edit-essay-header/{essay_id}")

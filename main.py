@@ -1,6 +1,4 @@
-from peewee import *
-from models import User
-#from database import db, users, get_password_hash
+from models import User, Essay
 from config import ADMIN_PASSWORD, ADMIN_EMAIL
 from essays import rt as rt_essay
 from todos import rt as rt_todo
@@ -115,16 +113,15 @@ def index(session):
         session['auth'] = ' '
     logging.info("in index session.get('auth') is {}".format(session['auth']))
 
-    #eys = db.q("SELECT * FROM essays WHERE published=1 ORDER BY last_edited")
-    eys= []
     essay_links= []
-    for ey in eys:
+    for ey in Essay.select().where(Essay.published == True):
         essay_links.append(
         Li(
             Grid(
-            A(ey['title'], href='/essay/{}'.format(ey['essay_id'])),
-            I(ey['author_fullname']),
-            Sub(datestring(ey['creation_date']))
+            A(ey.title, href='/essay/{}'.format(ey.id)),
+            I(ey.author_fullname),
+            Sub(ey.creation_date)
+            #Sub(datestring(ey.creation_date))
             )
         )
         )

@@ -1,6 +1,6 @@
 from peewee import *
 from datetime import datetime, timezone
-from config import DB_URL, ADMIN_EMAIL, ADMIN_PASSWORD
+from config import DB_URL
 
 db = SqliteDatabase(DB_URL)
 
@@ -17,14 +17,14 @@ class User(BaseModel):
     creation_date = DateField(default=datetime.now)
     last_login = DateTimeField(null=True)
 
-    @classmethod        # untested
-    def get_as_dict(cls, expr):
-        query = cls.select().where(expr).dicts()
-        return query.get()
+    #@classmethod        # untested
+    #def get_as_dict(cls, expr):
+    #    query = cls.select().where(expr).dicts()
+    #    return query.get()
 
 # I've opted for a string for authorname to minimise the number of queries in the homepage
 class Essay(BaseModel):
-    essay_id = AutoField()
+    id = AutoField()
     title = CharField()
     preamble=TextField()
     content=TextField()
@@ -36,7 +36,6 @@ class Essay(BaseModel):
 
     class Meta:
         indexes = ((('title', 'authorname'), True),)
-
 
 class Todo(BaseModel):
     id = AutoField()
