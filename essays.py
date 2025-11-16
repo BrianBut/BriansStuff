@@ -5,13 +5,13 @@ from datetime import datetime, timezone, date
 
 rt = APIRouter(prefix='/essays')
 
-@rt("/")
+@rt("/") # Supplies url '/essays'
 def index(session):
     logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
     nav_items= ['Home', 'Essays']
     essays = Essay.select().where(Essay.authorname == session.get('auth')) # TODO ORDER BY last_edited",
     essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.essay_id)), essay.author_fullname,
-        AifEqual( session.get('auth'), essay.authorname, 'Edit', href='/essays/edit_essay/{}'.format(essay.essay_id)),
+        #AifEqual( session.get('auth'), essay.authorname, 'Edit', href='/essays/edit_essay/{}'.format(essay.essay_id)),
         AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published, href='/essays/toggle-essay-published/{}'.format(essay.essay_id)),
         )) for essay in essays]
     return Container(
@@ -35,7 +35,6 @@ def new_essay(session):
         Button("Create New Essay"))
     return( Titled('New Essay', frm))
 
-# This replaces the old post route
 @rt
 def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str):
     logging.info('in send_new_essay')
@@ -46,14 +45,14 @@ def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str
     assert(essay)
     logging.info('in send_new_essay, essay is {}'.format(essay.get()))
     return RedirectResponse('essay/{}'.format(essay.get()))
-'''
+
 @rt('/toggle-essay-published/{essay_id}')
 def get(essay_id:int):
-    ess= essays[essay_id]
-    ess['published'] = not int(ess['published']) # Test this
-    essays.upsert(ess)
+    essay= Essay.get_by_id(essay_id)
+    essay.published= not(essay.published)
+    essay.save()
     return Redirect('/essays')
-'''
+
 @rt('/essay/{essay_id}') # on /essays/essay/10
 def get(essay_id:int, session):
     nav_items = ['Home', 'Essays']
@@ -70,6 +69,8 @@ def get(essay_id:int, session):
         Hr(essay['content'], cls="marked"))
     return (cts)
 
+#REDUNDANT
+'''
 @rt("/edit_essay/{essay_id}")
 def get(essay_id:int):  # Dont forget to set type
     ey = Essay.get(essay_id=essay_id)
@@ -80,34 +81,41 @@ def get(essay_id:int):  # Dont forget to set type
         A('Edit Essay Header', href='/essays/edit-essay-header/{}'.format(essay_id)),
             A('Edit Essay Content', href='/essays/edit-essay-content/{}'.format(essay_id)),))
     ))
+'''
 
-# Broken
+#OK
 @rt("/edit-essay-header/{essay_id}")
 def get(essay_id:int):
-    essay = Essay.get(essay_id=essay_id)
-    return(Titled('Edit Essay Header',
-        Form(Input(type="text", name="title", value=essay.title),
+    essay = Essay.get_by_id(essay_id)
+    form = Form(action=send_edit_essay_header, method='post')(
+        Hidden(essay_id, name='essay_id'),
+        Input(type="text", name="title", value=essay.title),
         Textarea( essay.preamble, name="preamble", rows=5 ),
-        Button("Submit", type="submit",  method='post'))))
+        Button("Apply Changes"),
+        Span(id="error", style="color:red"),
+        )
+    return (Titled('Edit Essay Title or Header', form))
 
+#OK
+@rt
 def send_edit_essay_header( essay_id:int, title:str, preamble:str):
-    essay= Essay.get(essay_id=essay_id)
+    essay= Essay.get_by_id(essay_id)
     essay.title= title
     essay.preamble= preamble
-    logging.info('edit-essay-header POST, published is now {}'.format(essay['published']))
+    logging.info('edit-essay-header POST, published is now {}'.format(essay.published))
     essay.last_edited= datetime.now(timezone.utc)
     essay.save()
-    return RedirectResponse( url='essays/essay/{}'.format(essay_id), status_code=303)
+    return RedirectResponse( '/essays/essay/{}'.format(essay_id), status_code=303)
 
 #OK
 @rt("/edit-essay-content/{essay_id}")
 def get(essay_id: int):
-    essay = Essay.get(essay_id=essay_id)
+    essay = Essay.get_by_id(essay_id)
     logging.info('In edit_essay_content get {}'.format(essay))
     form=Form(action=send_essay_content, method='post')(
         Hidden(essay_id, name='essay_id'),
         Textarea(essay.content, name='content', rows=20),
-        Button("Submit Changes"),
+        Button("Apply Changes"),
         Span(id="error", style="color:red"),
         )
     return (Titled('Edit Essay Content', form))
