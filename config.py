@@ -1,5 +1,7 @@
+# These are values I have used on my home computer(but not any more)
+# They are not used on any servers
+# You should write your own
 DB_URL= "////home/brian/databases/BFPW.db"
-BODB_URL= "/home/brian/Pictures/bodb/"
 SECRET_KEY= "poegranitewithcheese"
 SALT= "3 Fishes"
 ADMIN_PASSWORD= "top secret"

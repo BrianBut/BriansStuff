@@ -45,7 +45,7 @@ def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str
         logging.error("Possibly a duplicate title and authorname")
         return RedirectResponse('new_essay')
     logging.info('in send_new_essay, essay is {}'.format(essay.id))
-    return Redirect('essay/{}'.format(essay.id))
+    return Redirect('edit-essay-content/{}'.format(essay.id))
 
 @rt('/toggle-essay-published/{id}')
 def get(id:int):
@@ -100,6 +100,17 @@ def send_essay_content(essay_id:int, content:str):
     logging.info('about to save essay {}'.format(essay_id))
     essay.save()
     return RedirectResponse('/essays/essay/{}'.format(essay_id), status_code=303)
+
+@rt('/essay/{id}')
+def get(id:int, session):
+    nav_items = ['Home', 'Essays']
+    essay = Essay.get(id=id)
+    return( Container(common_header(nav_items, essay.title, session),
+        Hr(Small(essay.preamble)),
+        Hr(),
+        Div(essay.content, cls="marked"),
+        A('Edit Content', href="/essays/edit-essay-content/{}".format(essay.id)))
+        )
 
 if __name__ == '__main__':
     pass

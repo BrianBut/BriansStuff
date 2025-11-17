@@ -6,7 +6,7 @@ from fasthtml.common import *
 from datetime import datetime, timezone
 from components import common_header, logging, datestring, get_password_hash
 
-#create admin user if he does not exist
+#create an admin user if he does not exist
 try:
     User.create(name='Admin', email=ADMIN_EMAIL, password=get_password_hash(ADMIN_PASSWORD), fullname='Administrator')
 except:
@@ -19,7 +19,7 @@ def before(req, sess):
         return login_redir
 
 # Beforeware objects require the function itself, and optionally a list of regexes to skip.
-bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essays/*'])
+bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
 
 app, rt = fast_app(
     pico=True,
@@ -113,7 +113,7 @@ def index(session):
     essays = Essay.select().where(Essay.published)
     essay_links = [Li( Grid(A(essay.title, href='/essay/{}'.format(essay.id)), essay.author_fullname )) for essay in essays ]
     return Container(
-        common_header(nav_items, 'My Writings', session),
+        common_header(nav_items, "Brian's Stuff", session),
         Hr(),
         Ul(*essay_links, cls="flex space-x-10"))
 
@@ -121,7 +121,9 @@ def index(session):
 def get(id:int, session):
     nav_items = ['Home', 'Essays']
     essay = Essay.get(id=id)
-    return( Container(common_header(nav_items, essay.title, session),
+    return( Container(common_header(nav_items, "Brian's Stuff", session),
+        Hr(),
+        Titled(essay.title),
         Hr(Small(essay.preamble)),
         Hr(),
         Div(essay.content, cls="marked"))
