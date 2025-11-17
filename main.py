@@ -19,7 +19,7 @@ def before(req, sess):
         return login_redir
 
 # Beforeware objects require the function itself, and optionally a list of regexes to skip.
-bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', '/essays'])
+bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essays/essay/*'])
 
 app, rt = fast_app(
     pico=True,
@@ -118,7 +118,7 @@ def index(session):
         essay_links.append(
         Li(
             Grid(
-            A(ey.title, href='/essay/{}'.format(ey.id)),
+            A(ey.title, href='/essays/essay/{}'.format(ey.id)),
             I(ey.author_fullname),
             Sub(ey.creation_date)
             #Sub(datestring(ey.creation_date))

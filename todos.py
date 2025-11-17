@@ -1,6 +1,6 @@
 from fasthtml.common import *
 from datetime import datetime
-from components import logging, common_header
+from components import logging, common_header, AifEqualToggle
 from models import Todo
 
 rt = APIRouter(prefix='/todos')
@@ -9,8 +9,11 @@ rt = APIRouter(prefix='/todos')
 def todos(session):
     assert(session.get('auth') == 'Admin')
     nav_items=["Home"]
-    todo_links= [ Grid(A(todo.title, todo.description, todo.comments, href='/todos/edit_todo/{}'.format(todo.id)), style='text-align: left'
-        ) for todo in Todo.select().where(Todo.done == datetime.min)]
+    todo_links= [ Grid(A(todo.title, todo.description, todo.comments, href='/todos/edit_todo/{}'.format(todo.id)),
+        AifEqualToggle(todo.done, False, 'hide', 'publish', todo.done, href='/essays/toggle-essay-published/{}'.format(todo.id)),
+        A('Testing'),
+        style='text-align: left'
+        ) for todo in Todo.select().where(Todo.done == False)]
     return Container(
         common_header(nav_items,'Todos', session),
         Hr(),
@@ -47,4 +50,11 @@ def edit_todo(id:int):
         Button("Submit")
     )
     return( Titled('todo', frm))
+
+@rt('/toggle-todo-done/{id}')
+def get(id:int):
+    todo = Todo.get(id)
+    todo.published= not(todo.published)
+    todo.save()
+    return RedirectResponse('/essays')
 

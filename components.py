@@ -46,7 +46,7 @@ def common_header(nav_items: list[str], title, session):
 
 def AifEqual( var1, var2, title, href ):
     logging.info("var1 is {}, var2 is {}".format(var1,var2))
-    if var1 and  var2:
+    if var1 or var2:
         if var1 == var2:
             return A(title, href=href)
 

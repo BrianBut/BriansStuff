@@ -43,7 +43,7 @@ class Todo(BaseModel):
     description = TextField(default='?')
     comments = TextField(null=True)
     notified = DateTimeField(default=datetime.now(timezone.utc))
-    done = DateTimeField(default=datetime.min)
+    done = BooleanField(default=False)
 
 db.connect()
 db.create_tables([User, Essay, Todo])
