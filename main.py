@@ -19,7 +19,7 @@ def before(req, sess):
         return login_redir
 
 # Beforeware objects require the function itself, and optionally a list of regexes to skip.
-bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essays/essay/*'])
+bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essays/*'])
 
 app, rt = fast_app(
     pico=True,
@@ -33,8 +33,7 @@ rt_todo.to_app(app)
 # Any Starlette response class can be returned by a FastHTML route handler.
 login_redir = RedirectResponse('/login', status_code=303)
 
-# FastHTML uses Starlette's path syntax, and adds a `static` type which matches standard static file extensions. You can define your own regex path specifiers -- for instance this is how `static` is defined in FastHTML `reg_re_param("static", "ico|gif|jpg|jpeg|webm|css|js|woff|png|svg|mp4|webp|ttf|otf|eot|woff2|txt|xml|html")`
-# Provide param to `rt` to use full Starlette route syntax.
+# FastHTML uses Starlette's path syntax, and adds a `static` type which matches standard static file extensions.
 @rt("/{fname:path}.{ext:static}", methods=['GET'])
 def static_handler(fname:str, ext:str): return FileResponse(f'{fname}.{ext}')
 
@@ -105,37 +104,28 @@ def send_register(name:str, pword:str, email:str, fullname:str):
 @rt("/") 
 def index(session):
     nav_items=['Essays'] # also 'Birds' etc
-    title="Brian's Stuff"
     try:
         if session['auth'] == 'Admin':
             nav_items.append('Todos')
     except:
-        session['auth'] = ' '
-    logging.info("in index session.get('auth') is {}".format(session['auth']))
+        session['auth'] = ''
 
-    essay_links= []
-    for ey in Essay.select().where(Essay.published == True):
-        essay_links.append(
-        Li(
-            Grid(
-            A(ey.title, href='/essays/essay/{}'.format(ey.id)),
-            I(ey.author_fullname),
-            Sub(ey.creation_date)
-            #Sub(datestring(ey.creation_date))
-            )
+    essays = Essay.select().where(Essay.published)
+    essay_links = [Li( Grid(A(essay.title, href='/essay/{}'.format(essay.id)), essay.author_fullname )) for essay in essays ]
+    return Container(
+        common_header(nav_items, 'My Writings', session),
+        Hr(),
+        Ul(*essay_links, cls="flex space-x-10"))
+
+@rt('/essay/{id}')
+def get(id:int, session):
+    nav_items = ['Home', 'Essays']
+    essay = Essay.get(id=id)
+    return( Container(common_header(nav_items, essay.title, session),
+        Hr(Small(essay.preamble)),
+        Hr(),
+        Div(essay.content, cls="marked"))
         )
-        )
-    #logging.info("essay_links is {}".format(essay_links))
-    #logging.info("result is {}".format(eys))
-    logging.info('nav_items is {}'.format(nav_items))
-    cts = Container(
-        common_header(nav_items, title, session ),
-        Ul(
-            *essay_links,
-            cls="flex space-x-10"
-        )
-    )
-    return cts
 
 @app.get("/logout")
 def logout(session):

@@ -54,22 +54,6 @@ def get(id:int):
     essay.save() #OK
     return RedirectResponse('/essays')
 
-@rt('/essay/{id}')
-def get(id:int, session):
-    nav_items = ['Home', 'Essays']
-    essay = Essay.get(id=id)
-    logging.info('in essay, essay is {}'.format(essay))
-    if session.get('auth'):
-        cts= Container(common_header(nav_items, essay.title, session),
-        Hr(Div(Small(essay.preamble))),Hr(),
-        Div(essay.content, cls="marked"),
-        Grid(A('Edit Preamble', href='/essays/edit-essay-header/{}'.format(essay.id)), A('Edit Content', href='/essays/edit-essay-content/{}'.format(essay.id))))
-    else:
-        cts = Container(common_header(nav_items, essay.title, session),
-        Hr(Small(essay['preamble'])),
-        Hr(essay['content'], cls="marked"))
-    return (cts)
-
 #OK
 @rt("/edit-essay-header/{essay_id}")
 def get(essay_id:int):
