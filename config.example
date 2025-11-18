@@ -2,8 +2,8 @@
 # They are not used on any servers
 # You should write your own
 DB_URL= "////home/brian/databases/BFPW.db"
-SECRET_KEY= "poegranitewithcheese"
-SALT= "3 Fishes"
-ADMIN_PASSWORD= "top secret"
-ADMIN_EMAIL= "adam@schoolhouse.byton"
-LOGFILE= "////home/brian/briansstuff.log"
+SECRET_KEY= "this is my top secret key"
+SALT= "Sodium Chloride"
+ADMIN_PASSWORD= "top secret password"
+ADMIN_EMAIL= "administrator@schoolhouse.byton"
+LOGFILE= "/home/brian/briansstuff.log"
