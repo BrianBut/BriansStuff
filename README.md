@@ -1,5 +1,5 @@
-# BriansStuffPW
-BriansStuff Site with peewee database
+# BriansStuff
+This is my experimental site using Fast-Html and the PeeWee database
 
-My Brian's stuff site has many bugs because of database errors. The fastlite database ignores table constraints, leading to enexpected errors. 
-I have not found an adequate testing check for fastlite.
+Although it is very much work in progress, You are welcome to try it out on [http://brianbutcher.eu.pythonanywhere.com/](http://brianbutcher.eu.pythonanywhere.com/)
+You are welcome to register and log in you may do so and try writing your own 'essays'. 
