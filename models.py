@@ -23,7 +23,7 @@ class User(BaseModel):
     #    return query.get()
 
 # I've opted to use a string for authorname to minimise the number of queries in the homepage
-# It would be possible, but probably pointless, to use declare an author_id field as a foreign key
+# It would be possible, but probably pointless, to an author_id field as a foreign key to the User table
 class Essay(BaseModel):
     id = AutoField()
     title = CharField()

@@ -9,7 +9,7 @@ rt = APIRouter(prefix='/essays')
 def index(session):
     logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
     nav_items= ['Home', 'Essays']
-    essays = Essay.select().where(Essay.authorname == session.get('auth')) # TODO ORDER BY last_edited",
+    essays = Essay.select().where(Essay.authorname == session.get('auth')).order_by(Essay.last_edited.desc())
     essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
         #AifEqual( session.get('auth'), essay.authorname, 'Edit', href='/essays/edit_essay/{}'.format(essay.essay_id)),
         AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published, href='/essays/toggle-essay-published/{}'.format(essay.id)),

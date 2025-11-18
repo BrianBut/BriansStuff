@@ -110,7 +110,7 @@ def index(session):
     except:
         session['auth'] = ''
 
-    essays = Essay.select().where(Essay.published)
+    essays = Essay.select().where(Essay.published).order_by(Essay.last_edited)
     essay_links = [Li( Grid(A(essay.title, href='/essay/{}'.format(essay.id)), essay.author_fullname )) for essay in essays ]
     return Container(
         common_header(nav_items, "Brian's Stuff", session),
