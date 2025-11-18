@@ -4,10 +4,10 @@ from datetime import date, datetime, timezone
 from functools import wraps
 import hashlib
 from models import User
-from config import SALT
+from config import SALT, LOGFILE
 import logging
 
-logging.basicConfig(filename='/home/brian/briansstuff.log', level=logging.INFO, format='%(asctime)s %(message)s')
+logging.basicConfig(filename=LOGFILE, level=logging.INFO, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 def get_password_hash(plain_password):
