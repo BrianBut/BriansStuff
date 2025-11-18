@@ -1,9 +1,0 @@
-# These are values I have used on my home computer(but not any more)
-# They are not used on any servers
-# You should write your own
-DB_URL= "////home/brian/databases/BFPW.db"
-SECRET_KEY= "poegranitewithcheese"
-SALT= "3 Fishes"
-ADMIN_PASSWORD= "top secret"
-ADMIN_EMAIL= "adam@schoolhouse.byton"
-LOGFILE= "////home/brian/briansstuff.log"
