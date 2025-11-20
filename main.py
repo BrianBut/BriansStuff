@@ -59,15 +59,12 @@ def send_login(name:str, pwd:str, sess):
         return Redirect('/register') # name not recognised
     logging.info("query is {}".format(query))
     u= query.get()
-    logging.info("u is {}".format(u.name))
+    #logging.info("u is {}".format(u.name))
     if not u.password == get_password_hash(pwd):
         logging.info("incorrect password for {}".format(u.name))
         return RedirectResponse('/login') # password incorrect
     u.last_login= datetime.now(timezone.utc)
-    res = (User
-           .update({User.last_login: datetime.now(timezone.utc)})
-           .where(User.name == name)
-           .execute())
+    res = (User.update({User.last_login: datetime.now(timezone.utc)}).where(User.name == name).execute())
 
     logging.info("res is {}".format(res))
     sess['auth'] = name

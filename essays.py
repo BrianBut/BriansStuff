@@ -1,5 +1,5 @@
 from fasthtml.common import *
-from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle
+from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle, AifNEAND, AifEqualAND
 from models import Essay, User
 from datetime import datetime, timezone, date
 
@@ -11,14 +11,15 @@ def index(session):
     nav_items= ['Home', 'Essays']
     essays = Essay.select().where(Essay.authorname == session.get('auth')).order_by(Essay.last_edited.desc())
     essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
-        #AifEqual( session.get('auth'), essay.authorname, 'Edit', href='/essays/edit_essay/{}'.format(essay.essay_id)),
-        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published, href='/essays/toggle-essay-published/{}'.format(essay.id)),
+        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published,  href='/essays/toggle-essay-published/{}'.format(essay.id)),
+        AifNEAND(session.get('auth'), essay.authorname, essay.published, title='delete', href='/essays/delete_essay/{}'.format(essay.id)),
         )) for essay in essays]
     return Container(
         common_header(nav_items, 'My Writings', session),
         Hr(),
         Ul(*essay_links, cls="flex space-x-10" ),
         A(Button('New Essay'), href='/essays/new_essay'), style='text-align: right')
+
 
 @rt
 def new_essay(session):
@@ -46,6 +47,27 @@ def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str
         return RedirectResponse('new_essay')
     logging.info('in send_new_essay, essay is {}'.format(essay.id))
     return Redirect('edit-essay-content/{}'.format(essay.id))
+
+@rt('/delete_essay/{essay_id}')
+def delete_essay(essay_id:int):
+      logging.info('in delete_essay id is {}'.format(essay_id))
+      essay= Essay.get_by_id(essay_id)
+      logging.info('in delete_essay essay is {}'.format(essay.title))
+      msg= "DELETING '{}'".format(essay.title)
+      frm = Form(action=send_delete_essay, method='post')(
+        Hidden(essay_id, name='essay_id'),
+        Button('Delete'),
+        Span(id="error", style="color:red")
+      )
+      return Titled(msg, frm)
+
+@rt
+def send_delete_essay(essay_id:int):
+    logging.info("in send_delete_essay essay_id is {}".format(essay_id))
+    essay= Essay.get_by_id(essay_id)
+    if essay.delete_instance():
+          logging.info('Essay has been deleted')
+    return RedirectResponse('/essays')
 
 @rt('/toggle-essay-published/{id}')
 def get(id:int):
