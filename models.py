@@ -46,7 +46,8 @@ class Todo(BaseModel):
     description = TextField(default='?')
     comments = TextField(null=True)
     notified = DateTimeField(default=datetime.now(timezone.utc))
-    done = BooleanField(default=False)
+    done = DateTimeField(default=datetime.min)
+    owner = ForeignKeyField(User, backref='todos')
 
 db.connect()
 db.create_tables([User, Essay, Todo])

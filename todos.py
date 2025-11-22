@@ -1,7 +1,7 @@
 from fasthtml.common import *
 from datetime import datetime
 from components import logging, common_header, AifEqualToggle
-from models import Todo
+from models import Todo, User
 
 rt = APIRouter(prefix='/todos')
 
@@ -13,7 +13,7 @@ def todos(session):
         AifEqualToggle(todo.done, False, 'hide', 'publish', todo.done, href='/essays/toggle-essay-published/{}'.format(todo.id)),
         A('Testing'),
         style='text-align: left'
-        ) for todo in Todo.select().where(Todo.done == False)]
+        ) for todo in Todo.select().where(Todo.done == datetime.min)]
     return Container(
         common_header(nav_items,'Todos', session),
         Hr(),
@@ -27,13 +27,14 @@ def new_todo(session):
         Input(type="text", name="title", placeholder="Title"),
         Textarea(name="description", placeholder="Description", rows=5),
         Textarea(name="comments", placeholder="comments", rows=2),
+        Hidden(name="owner", value=session),
         Button("Create New Todo"))
     return (Titled('New Todo', frm))
 
 @rt
-def send_todo(title:str, description:str, comments:str):
-    logging.info("in send_new_todo: title is {}, description is {}, comments are is {}".format(title, description, comments ))
-    todo= Todo( title=title, description=description, comments=comments,)
+def send_todo(session, title:str, description:str, comments:str):
+    logging.info("in send_new_todo: title is {}, description is {}, comments are is {}, owner is {}".format(title, description, comments, User.get(User.name==session.get('auth') )))
+    todo= Todo( title=title, description=description, comments=comments, owner=User.get(User.name==session.get('auth')))
     todo.save()
     logging.info("todo should be saved and redirected to {}".format('/todos/'))
     return RedirectResponse('/todos/', status_code=303)
