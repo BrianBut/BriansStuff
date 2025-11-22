@@ -23,7 +23,7 @@ class User(BaseModel):
     #    return query.get()
 
 # I've opted to use a string for authorname to minimise the number of queries in the homepage
-# It would be possible, but probably pointless, to an author_id field as a foreign key to the User table
+# It would be possible, but probably pointless, to use author_id field as a foreign key to the User table
 class Essay(BaseModel):
     id = AutoField()
     title = CharField()
@@ -36,7 +36,7 @@ class Essay(BaseModel):
     published=BooleanField(default=False)
 
 # The point of the following constraint is that it should permit two essays written by different people to share the same title.
-# It should also allow one author to write many essays. But it should raise an error if one author tries to create an essay with the same title as an earlier one.
+# It should also allow one author to write many essays. But it raises an error if one author tries to create an essay with the same title as an earlier one.
     class Meta:
         indexes = ((('title', 'authorname'), True),)
 

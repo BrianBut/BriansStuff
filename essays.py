@@ -5,13 +5,13 @@ from datetime import datetime, timezone, date
 
 rt = APIRouter(prefix='/essays')
 
-@rt("/") # Supplies url '/essays'
+@rt('/') # Supplies url '/essays'
 def index(session):
     logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
     nav_items= ['Home', 'Essays']
     essays = Essay.select().where(Essay.authorname == session.get('auth')).order_by(Essay.last_edited.desc())
     essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
-        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published,  href='/essays/toggle-essay-published/{}'.format(essay.id)),
+        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published,  href='/essays/toggle_essay_published/{}'.format(essay.id)),
         AifNEAND(session.get('auth'), essay.authorname, essay.published, title='delete', href='/essays/delete_essay/{}'.format(essay.id)),
         )) for essay in essays]
     return Container(
@@ -69,8 +69,10 @@ def send_delete_essay(essay_id:int):
           logging.info('Essay has been deleted')
     return RedirectResponse('/essays')
 
-@rt('/toggle-essay-published/{id}')
-def get(id:int):
+#@rt('/toggle_essay_published/{id}')
+#def get(id:int):
+@rt
+def toggle_essay_published(id:int):
     essay= Essay.get_by_id(id)
     essay.published= not(essay.published)
     essay.save() #OK
