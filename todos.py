@@ -1,5 +1,5 @@
 from fasthtml.common import *
-from datetime import datetime
+from datetime import datetime, timezone
 from components import logging, common_header, AifEqualToggle
 from models import Todo, User
 
@@ -9,16 +9,17 @@ rt = APIRouter(prefix='/todos')
 def todos(session):
     assert(session.get('auth') == 'Admin')
     nav_items=["Home"]
+    # List only shows not dones ordered by date notified
     todo_links= [ Grid(A(todo.title, todo.description, todo.comments, href='/todos/edit_todo/{}'.format(todo.id)),
-        AifEqualToggle(todo.done, False, 'hide', 'publish', todo.done, href='/essays/toggle-essay-published/{}'.format(todo.id)),
-        A('Testing'),
+        A('Mark Done', href='/todos/mark_done/{}'.format(todo.id), style='text-align: right'),
         style='text-align: left'
-        ) for todo in Todo.select().where(Todo.done == datetime.min)]
+        ) for todo in Todo.select().order_by(Todo.notified).where(Todo.done == datetime.min)]
     return Container(
         common_header(nav_items,'Todos', session),
         Hr(),
         Ul(*todo_links),
         A(Button('New Todo'), href='/todos/new_todo'), style='text-align: right')
+        # Toggle completed todos
 
 @rt
 def new_todo(session):
@@ -33,8 +34,11 @@ def new_todo(session):
 
 @rt
 def send_todo(session, title:str, description:str, comments:str):
-    logging.info("in send_new_todo: title is {}, description is {}, comments are is {}, owner is {}".format(title, description, comments, User.get(User.name==session.get('auth') )))
-    todo= Todo( title=title, description=description, comments=comments, owner=User.get(User.name==session.get('auth')))
+    logging.info("in send_new_todo: title is '{}', description is '{}', comments are '{}', owner is {}".format(title, description, comments, User.get(User.name==session.get('auth') )))
+    todo= Todo.get(title=title)
+    if not todo:
+        todo= Todo( title=title, description=description, comments=comments, owner=User.get(User.name==session.get('auth')), last_edited=datetime.UTC)
+    logging.info("todo.title is '{}'".format(todo.title))
     todo.save()
     logging.info("todo should be saved and redirected to {}".format('/todos/'))
     return RedirectResponse('/todos/', status_code=303)
@@ -44,18 +48,24 @@ def send_todo(session, title:str, description:str, comments:str):
 def edit_todo(id:int):
     logging.info("in edit_todo/{}".format(id))
     todo = Todo.get(id=id)
+    logging.info("todo title is {}".format(todo.title))
+    logging.info("todo description is {}".format(todo.description))
+    logging.info("todo comments are {}".format(todo.comments))
     frm = Form(action=send_todo, method='post')(
-        Input(type="text", name="title", value=todo.title),
-        Textarea(name="description", value=todo.description, rows=5),
-        Textarea(name="comments", value=todo.comments, rows=5),
+        Hidden(name="title", value=todo.title),
+        # Note the way textareas are set
+        Textarea( todo.description, id='description', rows=5),
+        Textarea( todo.comments, id='comments', rows=5),
         Button("Submit")
     )
-    return( Titled('todo', frm))
+    return( Titled('todo',
+        H3(U(todo.title)),
+        frm))
 
-@rt('/toggle-todo-done/{id}')
+@rt('/mark_done/{id}')
 def get(id:int):
     todo = Todo.get(id)
-    todo.published= not(todo.published)
+    todo.done= datetime.utcnow()
     todo.save()
-    return RedirectResponse('/essays')
+    return RedirectResponse('/todos')
 

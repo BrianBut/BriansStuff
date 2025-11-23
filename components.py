@@ -15,17 +15,6 @@ def get_password_hash(plain_password):
     hashed_password = hashlib.sha256(pwd_salt.encode())
     return hashed_password.hexdigest()
 
-'''
-# Creating a basic authentication decorator
-def basic_auth(f):
-    @wraps(f)
-    def wrapper(session, *args, **kwargs):
-        if "auth" not in session:
-            return Response('Not Authorized', status_code=401)
-        return f(session, *args, **kwargs)
-    return wrapper
-'''
-
 # comvert a datetime string in iso format to a date string
 def datestring(dts):
     dt= date.strftime(dts)
