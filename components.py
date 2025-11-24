@@ -32,6 +32,14 @@ def common_header(nav_items: list[str], title, session):
     #logging.info("In common_header buttons are {}".format(buttons))
     return Container( Nav( *buttons ),)
 
+#preceeds and interposes hrs between items in a list
+def hr_separated( items):
+    list= [Hr()]
+    for item in items:
+        list.append(item)
+        list.append(Hr())
+    return list
+
 def AifEqual( var1, var2, title, href ):
     logging.info("var1 is {}, var2 is {}".format(var1,var2))
     if var1 or var2:

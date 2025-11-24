@@ -1,6 +1,6 @@
 from fasthtml.common import *
 from datetime import datetime, timezone
-from components import logging, common_header, AifEqualToggle
+from components import logging, common_header, AifEqualToggle, hr_separated
 from models import Todo, User
 
 rt = APIRouter(prefix='/todos')
@@ -9,23 +9,20 @@ rt = APIRouter(prefix='/todos')
 def todos(session):
     assert(session.get('auth') == 'Admin')
     nav_items=["Home"]
-    # List only shows not dones ordered by date notified
     todo_links= [ Grid(A(todo.title, todo.comments, href='/todos/edit_todo/{}'.format(todo.id)),
-        A('Mark Done', href='/todos/mark_done/{}'.format(todo.id), style='text-align: right'),
-        style='text-align: left'
+        Div( A('Mark Done', href='/todos/mark_done/{}'.format(todo.id)), style='text-align: right'),
         ) for todo in Todo.select().order_by(Todo.notified).where(Todo.done == datetime.min)]
     done_links= [ Grid(A(todo.title, todo.comments, href='/todos/edit_todo/{}'.format(todo.id)),
-        A('Mark Not Done', href='/todos/mark_not_done/{}'.format(todo.id), style='text-align: right'),
-        A('Delete', href='/todos/delete/{}'.format(todo.id), style='text-align: right'),
-        style='text-align: left'
-        ) for todo in Todo.select().order_by(Todo.notified).where(Todo.done > datetime.min)]
+        Div( A('Mark Not Done', href='/todos/mark_not_done/{}'.format(todo.id)), style='text-align: right'),
+        Div( A('Delete', href='/todos/delete/{}'.format(todo.id)), style='text-align: right'),
+        ) for todo in Todo.select().order_by(Todo.done).where(Todo.done > datetime.min)]
     return Container(
         common_header(nav_items,'Todos', session),
-        Hr(),
-        Ul(*todo_links),
-        A(Button('New Todo'), href='/todos/new_todo', style='text-align: right'),
-        Hr(),
-        Ul(*done_links),
+        Ul(*hr_separated(todo_links)),
+        #Hr(),
+        Div(A(Button('New Todo'), href='/todos/new_todo'), style='text-align: right'),
+        #Hr(),
+        Ul(*hr_separated(done_links)),
         )
 
 
