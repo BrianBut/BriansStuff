@@ -34,10 +34,14 @@ def new_todo(session):
 
 @rt
 def send_todo(session, title:str, description:str, comments:str):
-    logging.info("in send_new_todo: title is '{}', description is '{}', comments are '{}', owner is {}".format(title, description, comments, User.get(User.name==session.get('auth') )))
-    todo= Todo.get(title=title)
-    if not todo:
-        todo= Todo( title=title, description=description, comments=comments, owner=User.get(User.name==session.get('auth')), last_edited=datetime.UTC)
+    username= session.get('auth')
+    user= User.get(User.name==session.get('auth'))
+    logging.info("UserId is {}".format(user.id))
+    logging.info("in send_new_todo: title is '{}', description is '{}', comments are '{}', owner is {}".format(title, description, comments, user.id ))
+    try: #New Todo
+        todo= Todo.get(title=title)
+    except: #Editing
+        todo= Todo( title=title, description=description, comments=comments, owner_id=user.id, last_edited=datetime.utcnow())
     logging.info("todo.title is '{}'".format(todo.title))
     todo.save()
     logging.info("todo should be saved and redirected to {}".format('/todos/'))

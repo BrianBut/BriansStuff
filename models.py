@@ -43,7 +43,6 @@ class Essay(BaseModel):
 class Todo(BaseModel):
     id = AutoField()
     title = CharField(unique=True)
-    description = TextField(default='?')
     comments = TextField(null=True)
     notified = DateTimeField(default=datetime.now(timezone.utc))
     done = DateTimeField(default=datetime.min)
