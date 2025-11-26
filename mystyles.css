@@ -1,20 +1,29 @@
-form textarea#summary {
-  height: 200px;
+h1 {
+  /*color: blue;*/
+  font-family: verdana;
+  font-size: 300%;
 }
 
-form textarea#content {
-  height: 300px;
+#title_box {
+    width: 30em;
+    text-align: left;
 }
 
-grid {
-  justify-items: start
+#essay_link {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  padding: 5px;
+  gap: 5px;
+  /*color: green;*/
+  justify-content: space-evenly;
 }
 
 /*
-button {
-    width: 15 em;
-    padding: 6px 24px;
-    background-color: #e7e7e7;
-    color: black;
+.essay div {
+  background-color: #f1f1f1;
+  color:#000;
+  padding: 10px;
+  font-size: 30px;
+  text-align: center;
 }
 */

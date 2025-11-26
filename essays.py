@@ -1,5 +1,5 @@
 from fasthtml.common import *
-from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle, AifNEAND, AifEqualAND
+from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle, AifNEAND, AifEqualAND, Linked_label
 from models import Essay, User
 from datetime import datetime, timezone, date
 
@@ -10,10 +10,10 @@ def index(session):
     logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
     nav_items= ['Home', 'Essays']
     essays = Essay.select().where(Essay.authorname == session.get('auth')).order_by(Essay.last_edited.desc())
-    essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
+    essay_links= [ Li(Grid( Linked_label(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
         AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published,  href='/essays/toggle_essay_published/{}'.format(essay.id)),
         AifNEAND(session.get('auth'), essay.authorname, essay.published, title='delete', href='/essays/delete_essay/{}'.format(essay.id)),
-        style='text-align:left'
+        id='essay_link'
         )) for essay in essays]
     return Container(
         common_header(nav_items, 'My Writings', session),
@@ -70,13 +70,11 @@ def send_delete_essay(essay_id:int):
           logging.info('Essay has been deleted')
     return RedirectResponse('/essays')
 
-#@rt('/toggle_essay_published/{id}')
-#def get(id:int):
 @rt
 def toggle_essay_published(id:int):
     essay= Essay.get_by_id(id)
     essay.published= not(essay.published)
-    essay.save() #OK
+    essay.save()
     return RedirectResponse('/essays')
 
 #OK

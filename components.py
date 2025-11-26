@@ -39,6 +39,10 @@ def hr_separated( items):
         list.append(Hr())
     return list
 
+#fixed width link. Text within is left justified
+def Linked_label( text, href):
+    return( Div(A(text, href='{}'.format(href)), id='title_box'))
+
 def AifEqual( var1, var2, title, href ):
     logging.info("var1 is {}, var2 is {}".format(var1,var2))
     if var1 or var2:
@@ -83,4 +87,4 @@ if __name__ == '__main__':
     logging.info("date is {}".format(dt.date()))
     print(dt.strftime("%a %d %b %Y"))
 
-    print(datestring('2025-11-05 02:31:14.620199+00:00'))
+    #print(datestring('2025-11-05 02:31:14.620199+00:00'))
