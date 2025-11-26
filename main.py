@@ -2,6 +2,7 @@ from models import User, Essay
 from config import ADMIN_PASSWORD, ADMIN_EMAIL
 from essays import rt as rt_essay
 from todos import rt as rt_todo
+from mycollections import rt as rt_mycollections
 from fasthtml.common import *
 from datetime import datetime, timezone
 from components import common_header, logging, datestring, get_password_hash
@@ -29,6 +30,7 @@ app, rt = fast_app(
 
 rt_essay.to_app(app)
 rt_todo.to_app(app)
+rt_mycollections.to_app(app)
 
 # Any Starlette response class can be returned by a FastHTML route handler.
 login_redir = RedirectResponse('/login', status_code=303)
@@ -100,7 +102,7 @@ def send_register(name:str, pword:str, email:str, fullname:str):
 @rt("/home")
 @rt("/") 
 def index(session):
-    nav_items=['Essays'] # also 'Birds' etc
+    nav_items=['Essays', 'Collections'] # also 'Birds' etc
     try:
         if session['auth'] == 'Admin':
             nav_items.append('Todos')

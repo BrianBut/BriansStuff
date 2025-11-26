@@ -1,0 +1,74 @@
+from database import db
+from dataclasses import dataclass
+from config import BODB_URL
+from fasthtml.common import *
+
+rt = APIRouter()
+
+
+def fauna_list( url ):
+    birdlist = []
+    # TODO cater for .jpg and .JPG
+    pathlist = Path(url).glob('**/*.jpg')
+    for path in pathlist:
+        # path is object not string
+        fullpath = str(path)   
+        #print('fullpath: {}'.format(fullpath))
+        # for species need to delete any trailing numbers, punctuation
+        name = fullpath.split('/')[-1].split('.')[0].rstrip('0,1,2,3,4,5,6,7,8,9,-').replace('_',' ')
+        #print('name: {}'.format(name))
+
+        genus = fullpath.split('/')[-2].replace('_',' ')
+        #print('genus: {}'.format(genus))
+
+        location = fullpath.split('/')[-3]
+
+        fauna = { "image_path":fullpath, "name":name, "species":genus, "location":location }
+
+        birdlist.append(fauna)
+    return birdlist
+
+# create a reference to the table(but not the table)
+fauna = db.t.fauna
+
+@dataclass
+class Fauna:
+    name: str
+    species: str
+    location: str
+    image_path: str
+
+fauna = db.create(Fauna, pk="image_path")
+
+# From the table of fauna select a list of locations
+def locations():
+    qry = "select distinct location from fauna"
+    print(db.qry)
+
+# Make a list of species from Debre Birhan
+@rt
+def birds():
+    location_list = db.q("select distinct location from fauna")  # db.qry is a list of dicts
+    nav_items = []
+    for item in location_list:
+        nav_items.append(item["location"])
+    cts = Container(
+            H1("Welcome to Birds Page"),
+            H2("Birds from Debre Birhan"),
+            flat_nav_bar(nav_items),
+            A( reload_fauna_list, href='/reload_fauna_list' )
+        )
+    return cts
+
+@rt
+def reload_fauna_list():
+    H3('Please wait while the fauna list is reloaded')
+    print( 'reloading fauna list')
+    list = fauna_list(BODB_URL)
+    #fauna.insert_all(list) does not work as it cannot handle duplicates
+    # There is a problem using upsert all upsert as ???
+    for fa in list:
+        print(fa)
+        fauna.upsert(fa)
+    print( 'reloaded fauna list')
+    return 

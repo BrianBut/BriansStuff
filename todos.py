@@ -19,9 +19,7 @@ def todos(session):
     return Container(
         common_header(nav_items,'Todos', session),
         Ul(*hr_separated(todo_links)),
-        #Hr(),
         Div(A(Button('New Todo'), href='/todos/new_todo'), style='text-align: right'),
-        #Hr(),
         Ul(*hr_separated(done_links)),
         )
 

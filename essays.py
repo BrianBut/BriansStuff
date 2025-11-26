@@ -13,6 +13,7 @@ def index(session):
     essay_links= [ Li(Grid(A(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
         AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published,  href='/essays/toggle_essay_published/{}'.format(essay.id)),
         AifNEAND(session.get('auth'), essay.authorname, essay.published, title='delete', href='/essays/delete_essay/{}'.format(essay.id)),
+        style='text-align:left'
         )) for essay in essays]
     return Container(
         common_header(nav_items, 'My Writings', session),

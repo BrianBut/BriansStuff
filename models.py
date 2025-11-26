@@ -48,6 +48,17 @@ class Todo(BaseModel):
     done = DateTimeField(default=datetime.min)
     owner = ForeignKeyField(User, backref='todos')
 
+# Collections of photographs
+class MyCollection(BaseModel):
+    title = CharField(unique=True)
+    owner = ForeignKeyField(User, backref='mycollections')
+
+class Photo(BaseModel):
+    id = AutoField()
+    image_url = TextField(unique=True)
+    collection = ForeignKeyField(MyCollection, backref='photos')
+
+
 db.connect()
-db.create_tables([User, Essay, Todo])
+db.create_tables([User, Essay, Todo, MyCollection, Photo])
 

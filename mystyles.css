@@ -6,6 +6,10 @@ form textarea#content {
   height: 300px;
 }
 
+grid {
+  justify-items: start
+}
+
 /*
 button {
     width: 15 em;

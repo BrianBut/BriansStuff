@@ -22,7 +22,6 @@ def datestring(dts):
 
 def common_header(nav_items: list[str], title, session):
     buttons= [(A(Button(item), href=f"/{item}/".lower())) for item in nav_items]
-    #logging.info("In common_header session.get('auth') is {}".format(session.get('auth')))
     query = User.select().where(User.name == session.get('auth'))
     if query.exists():
         buttons.append(A(Button(session.get('auth')), href='/logout'))
