@@ -64,11 +64,11 @@ def birds():
 def reload_fauna_list():
     H3('Please wait while the fauna list is reloaded')
     print( 'reloading fauna list')
-    list = fauna_list(BODB_URL)
+    list = fauna_list(BODB_URL, categories)
     #fauna.insert_all(list) does not work as it cannot handle duplicates
     # There is a problem using upsert all upsert as ???
-    for fa in list:
-        print(fa)
-        fauna.upsert(fa)
-    print( 'reloaded fauna list')
+    #for fa in list:
+    #    print(fa)
+    #    fauna.upsert(fa)
+    #print( 'reloaded fauna list')
     return 

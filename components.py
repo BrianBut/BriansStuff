@@ -39,7 +39,7 @@ def hr_separated( items):
         list.append(Hr())
     return list
 
-#fixed width link. Text within is left justified
+#fixed width link. Text within is left justified - see mystyles.css
 def Linked_label( text, href):
     return( Div(A(text, href='{}'.format(href)), id='title_box'))
 
@@ -80,6 +80,9 @@ def ButtonifLoggedIn( var1, style, title, href):
     logging.info("In ButtonifEqual var1 is {}".format(var1))
     if var1:
         return A(Button(title), href=href)
+
+def ButtonRight(title, href):
+    return Div(A( Button(title, href='#'), href=href), id='label_right')
 
 if __name__ == '__main__':
     dt = datetime.now(timezone.utc)

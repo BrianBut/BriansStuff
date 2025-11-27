@@ -52,6 +52,7 @@ class Todo(BaseModel):
 class MyCollection(BaseModel):
     title = CharField(unique=True)
     owner = ForeignKeyField(User, backref='mycollections')
+    picturepath = TextField()
 
 class Photo(BaseModel):
     id = AutoField()

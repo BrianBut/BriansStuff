@@ -1,5 +1,5 @@
 from fasthtml.common import *
-from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle, AifNEAND, AifEqualAND, Linked_label
+from components import common_header, logging, AifEqual, ButtonifLoggedIn, AifEqualToggle, AifNEAND, AifEqualAND, Linked_label, ButtonRight
 from models import Essay, User
 from datetime import datetime, timezone, date
 
@@ -19,7 +19,8 @@ def index(session):
         common_header(nav_items, 'My Writings', session),
         Hr(),
         Ul(*essay_links, cls="flex space-x-10" ),
-        A(Button('New Essay'), href='/essays/new_essay'), style='text-align: right')
+        A(ButtonRight('New Essay', '/essays/new_essay'))
+        )
 
 
 @rt
