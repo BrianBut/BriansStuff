@@ -7,12 +7,12 @@ rt = APIRouter(prefix='/essays')
 
 @rt('/') # Supplies url '/essays'
 def index(session):
-    logging.info("in essays session.get(auth) is {}".format(session.get('auth')))
+    author = User.select().where(User.name == session.get('auth')).get()
     nav_items= ['Home', 'Essays']
-    essays = Essay.select().where(Essay.authorname == session.get('auth')).order_by(Essay.last_edited.desc())
-    essay_links= [ Li(Grid( Linked_label(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author_fullname,
-        AifEqualToggle(session.get('auth'), essay.authorname, 'hide', 'publish', essay.published,  href='/essays/toggle_essay_published/{}'.format(essay.id)),
-        AifNEAND(session.get('auth'), essay.authorname, essay.published, title='delete', href='/essays/delete_essay/{}'.format(essay.id)),
+    essays = Essay.select().where(Essay.author_id == author.id).order_by(Essay.last_edited.desc())
+    essay_links= [ Li(Grid( Linked_label(essay.title, href='/essays/essay/{}'.format(essay.id)), essay.author.fullname,
+        AifEqualToggle(session.get('auth'), essay.author.name, 'hide', 'publish', essay.published,  href='/essays/toggle_essay_published/{}'.format(essay.id)),
+        AifNEAND(session.get('auth'), essay.author.name, essay.published, title='delete', href='/essays/delete_essay/{}'.format(essay.id)),
         id='essay_link'
         )) for essay in essays]
     return Container(
@@ -22,30 +22,27 @@ def index(session):
         A(ButtonRight('New Essay', '/essays/new_essay'))
         )
 
-
 @rt
 def new_essay(session):
     assert(session.get('auth'))
     author = User.select().where(User.name == session.get('auth')).get()
     assert(author)
-    logging.info('author.fullname is {}'.format(author.fullname))
     frm= Form(action=send_new_essay, method='post')(
         Input(type="text", name="title", placeholder="Title"),
-        Input(type="hidden", name='authorname', value=author.name),
-        Input(type="hidden", name='author_fullname', value=author.fullname),
+        Input(type="hidden", name='author', value=author),
         Textarea( name="preamble", placeholder="Preamble", rows=5 ),
         Label("Add content later"),
         Button("Create New Essay"))
     return( Titled('New Essay', frm))
 
 @rt
-def send_new_essay( title:str, authorname:str, author_fullname:str, preamble:str):
+def send_new_essay( title:str, author:int, preamble:str):
     logging.info('in send_new_essay')
-    essay= Essay(title=title, preamble=preamble, content='', authorname=authorname, author_fullname=author_fullname)
+    essay= Essay(title=title, preamble=preamble, content='', author=author)
     try:
         essay.save()
     except:
-        logging.error("Possibly a duplicate title and authorname")
+        logging.error("Failed to save new essay")
         return RedirectResponse('new_essay')
     logging.info('in send_new_essay, essay is {}'.format(essay.id))
     return Redirect('edit-essay-content/{}'.format(essay.id))
@@ -71,17 +68,19 @@ def send_delete_essay(essay_id:int):
           logging.info('Essay has been deleted')
     return RedirectResponse('/essays')
 
-@rt
-def toggle_essay_published(id:int):
-    essay= Essay.get_by_id(id)
+@rt("/toggle_essay_published/{essay_id}")
+def toggle_essay_published(essay_id:int):
+    logging.info("in toggle_essay_published essay_id is {}".format(essay_id))
+    essay= Essay.get_by_id(essay_id)
     essay.published= not(essay.published)
     essay.save()
     return RedirectResponse('/essays')
 
 #OK
-@rt("/edit-essay-header/{essay_id}")
+@rt("/edit_essay_header/{essay_id}")
 def get(essay_id:int):
     essay = Essay.get_by_id(essay_id)
+    logging.info("in edit_essay_header {}".format(essay.id))
     form = Form(action=send_edit_essay_header, method='post')(
         Hidden(essay_id, name='essay_id'),
         Input(type="text", name="title", value=essay.title),
@@ -129,12 +128,14 @@ def send_essay_content(essay_id:int, content:str):
 def get(id:int, session):
     nav_items = ['Home', 'Essays']
     essay = Essay.get(id=id)
-    return( Container(common_header(nav_items, essay.title, session),
+    return( Container(
+        common_header(nav_items, essay.title, session),
         Hr(Small(essay.preamble)),
         Hr(),
         Div(essay.content, cls="marked"),
-        A('Edit Content', href="/essays/edit-essay-content/{}".format(essay.id)))
-        )
+        A('Edit Content', href="/essays/edit-essay-content/{}".format(essay.id)),
+        Linked_label('Edit Preamble', href="/essays/edit_essay_header/{}".format(essay.id))
+        ))
 
 if __name__ == '__main__':
     pass

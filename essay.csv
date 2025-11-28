@@ -1,0 +1,33 @@
+id,title,preamble,content,authorname,author_fullname,creation_date,last_edited,published
+1,About This Website,"What this website is, how it is implemented, and why these implementation choices were chosen.","This website is written in [Fast-HTML](https://www.fastht.ml/docs/) and uses a [PeeWee](https://docs.peewee-orm.com/en/latest/) database.
+
+I have been coding computers for about 60 years( depending upon how you distinguish early computers from calculating machines ). I have been writing websites, mainly for the satisfaction of doing it since 2000.  But now I am in my 80's my requirements for coding, and my preferences for a website, have changed.
+
+I dislike animation on computer screens and I find that animation like that on [Fast-HTML's homepage](https://www.fastht.ml/#) gives me migraine (DON'T LOOK!). I like the hand icon used for links on a Fast-HTML site with the default pico, but other animation and popups are distractions which make it even more difficult to use a mouse while I have unsteady hands.
+
+Having got far enough with Fast-HTML to publish this webpage it seems that it, with pico styles, meets my requirements. I may at sometime  in the future try switching to Bootstrap5 stylesheets as that might make the site more readable on small screens, and possibly for those with limited vision.
+
+Fast-HTML comes with a bundled database software. ( I have not used it because it does not check or enforce database constraints.) PeeWee is a small elegant interface to the [Sqlite](sqlite.org) and other databases. I have only recently started using PeeWee, but so far it has been very simple to use with FastHtml. It's documentation is very readable and much clearer than that of [SQLAlchemy](https://www.sqlalchemy.org). I find it easier to read lines of data as attributes (PeeWee) rather than items in a dictionary (FastLite)
+
+PeeWee is showing itself very easy to use with fast-HTML and provides very useful error trapping in a way which is not possible with [Fastlite](https://exploringml.com/posts/introduction-to-fastlite/).
+
+Fast-HTML itself has made it possible to write a web app with a fraction of the code that other apps would use. Up until recently I have been using Flask. It requires several times the amount of code that Fast-Html uses.
+
+The material I plan to include on this website (Brian's Stuff) includes some things I have written, some things I want to write. It will include some photographs I have taken.
+
+I do not expect ever to completely finish this website, but will upgrade it regularly. The software is available on [Github](https://github.com/BrianBut/BriansStuff).
+
+If you feel inclined to write your own material you are welcome to register, login and write your own stuff which will be listed with all the other stuff on the homepage. I hope also that your contributions will help the project to evolve.",Admin,Administrator,2025-11-17,2025-11-25,1
+2,My Wishlist for fast-html,My wishes for fast-html.,"Debugging and testing would be very much easier is there was a facility to list ll routes, similar to flask's routes.",Admin,Administrator,2025-11-17,2025-11-17,0
+3,Installing on PythonAnywhere,This is my manual/reminder of how to install this site on [eu.pythonanywhere.com],Fast-Html runs on ASGI so the normal methods of publishing a website do not apply.,Admin,Administrator,2025-11-18,2025-11-18,0
+4,SSH on PythonAnywhere,Notes on installing SSH keys on Python Anywhere,"From a console in my home computer type; 'ssh **MyUsername@ssh.eu.pythonanywhere.com**, (remember that pythonanywhere usernames are case sensitive.)
+
+**ssh 'BrianButcher@ssh.eu.pythonanywhere.com **
+
+This should the pythonanywhere server to prompt you for your password. After a brief pause you will see a '*' prompt on your console.
+
+Follow [the pythonanywhere help page](https://help.pythonanywhere.com/pages/SSHAccess/) for good instructions.",Admin,Administrator,2025-11-19,2025-11-19,0
+5,Testing alternative routing format.,Yeh,Well?,brian,Brian Butcher,2025-11-21,2025-11-21,0
+6,Problems With Route Naming,"One of the major problems I face with coding in FastHtml is with routes. 
+
+How I wish there was a FastHtml routes command akin to to 'flask --app --routes'","[FastHtml's best practice recommendations](//www.fastht.ml/docs/ref/best_practice.html#route-naming-conventions) work well in a single page, but once I have ",brian,Brian Butcher,2025-11-21,2025-11-21,0

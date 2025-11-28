@@ -42,7 +42,6 @@ def static_handler(fname:str, ext:str): return FileResponse(f'{fname}.{ext}')
 @rt
 def login():
     frm = Form(action=send_login, method='post')(
-        # Tags with a `name` attr will have `name` auto-set to the same as `id` if not provided
         Input(id='name', placeholder='Name'),
         Input(id='pwd', type='password', placeholder='Password'),
         Button('login'))
@@ -53,24 +52,19 @@ def login():
 
 @rt
 def send_login(name:str, pwd:str, sess):
-    logging.info("in send_login: name is {}, pwd is {}, sess is {}".format(name,pwd, sess))
-    #if not name or not pwd: return login_redir
     query = User.select().where(User.name == name)
     if not query.exists():
         logging.info("name {} not recognised".format(name))
         return Redirect('/register') # name not recognised
-    logging.info("query is {}".format(query))
     u= query.get()
-    #logging.info("u is {}".format(u.name))
     if not u.password == get_password_hash(pwd):
         logging.info("incorrect password for {}".format(u.name))
         return RedirectResponse('/login') # password incorrect
     u.last_login= datetime.now(timezone.utc)
     res = (User.update({User.last_login: datetime.now(timezone.utc)}).where(User.name == name).execute())
-
-    logging.info("res is {}".format(res))
     sess['auth'] = name
-    logging.info("set sess to 'auth': {}".format(sess['auth']))
+    sess['uid'] = u.id
+    #logging.info("set sess to 'auth': {}, 'uid': {}".format(sess['auth'], sess['uid']))
     return RedirectResponse('/', status_code=303)
 
 @rt
@@ -110,7 +104,7 @@ def index(session):
         session['auth'] = ''
 
     essays = Essay.select().where(Essay.published).order_by(Essay.last_edited)
-    essay_links = [Li( Grid(A(essay.title, href='/essay/{}'.format(essay.id)), essay.author_fullname )) for essay in essays ]
+    essay_links = [Li( Grid(A(essay.title, href='/essay/{}'.format(essay.id)), essay.author.fullname )) for essay in essays ]
     return Container(
         common_header(nav_items, "Brian's Stuff", session),
         Hr(),
