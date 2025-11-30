@@ -50,6 +50,7 @@ class Todo(BaseModel):
 
 # Collections of photographs
 class MyCollection(BaseModel):
+    id = AutoField()
     title = CharField(unique=True)
     owner = ForeignKeyField(User, backref='mycollections')
     picturepath = TextField()
@@ -58,7 +59,8 @@ class Photo(BaseModel):
     id = AutoField()
     image_url = TextField(unique=True)
     collection = ForeignKeyField(MyCollection, backref='photos')
-
+    caption = TextField()
+    comment = TextField()
 
 db.connect()
 db.create_tables([User, Essay, Todo, MyCollection, Photo])

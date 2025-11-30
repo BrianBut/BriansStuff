@@ -1,10 +1,48 @@
 from fasthtml.common import *
 from components import common_header, logging, ButtonRight, Linked_label
-from models import MyCollection, User
+from models import MyCollection, User, Photo
 from datetime import datetime, timezone, date
 from config import PICTURE_PATH
+from os import path
 
 rt = APIRouter(prefix='/collections')
+
+# routines concerning image handling
+
+# prepend PICTURE_PATH to pp
+def full_picturepath(pp:str):
+    print(PICTURE_PATH)
+    res=PICTURE_PATH + pp
+    logging.info('Joined path is {}'.format(res))
+    return( res )
+
+# Return a list of image files with in path by suffix (e.g) '*.JPG'
+def list_image_files(path, suffix):
+    fullpath= full_picturepath(path)
+    pathgen= Path(fullpath).glob( suffix)
+    filelist=[]
+    for f in pathgen:
+        filelist.append(f)
+    return filelist
+
+#Find and store images in the database
+def find_photos(collection_id:int, picturepath:str):
+    fullpath= full_picturepath(picturepath)
+    print("Fullpath: {}/".format(fullpath))
+    l=list_image_files(picturepath, '*.JPG') + list_image_files(picturepath, '*.jpg')
+    print(l)
+    for path in l:
+        print(path)
+        photos = Photo.select().where(Photo.image_url== path) #FIXME
+        name=str(path).split('/')[-1]
+        print(name)
+        try: # New image url
+            photo=Photo(image_url=path, collection=collection_id, caption='', comment='')
+            photo.save()
+        except:
+           pass
+
+#########################################################################################
 
 @rt('/') # Supplies url '/collections'
 def index(session):
@@ -13,7 +51,7 @@ def index(session):
     collection_links= [
         Li( Grid(
             A(coll.title, href='/collections/item/{}'.format(coll.id)),
-            A(coll.picturepath, href='/collections/edit/picturepath/{}'.format(coll.id)),
+            A(coll.picturepath, href='/collections/edit_picturepath/{}'.format(coll.id)),
             )
         ) for coll in mycollection
         ]
@@ -45,15 +83,26 @@ def send_new_collection( title:str, picturepath:str, owner_id:int ):
     logging.info('in send_new_collection, collection is {}'.format(my_collection.id))
     return Redirect('/collections')
 
-# Find .JPG and .jpg in picture path and create photo records of them
-def find_photos(picturepath):
-    pathlist = Path(picturepath).glob('**/*.jpg')
+@rt("/edit_picturepath/{collection_id}")
+def edit_picturepath(collection_id:int):
+    logging.info("in edit_picturepath collection_id is {}".format(collection_id))
+    my_collection= MyCollection.get_by_id(collection_id)
+    frm= Form(action=send_picturepath, method='post')(
+        Hidden(collection_id, name='collection_id'),
+        Input(type="text", name="picturepath", value= my_collection.picturepath),
+        Button("Apply Changes"),
+    )
+    return (Titled('Edit Picture Path', frm))
+
+@rt
+def send_picturepath(collection_id:int, picturepath:str):
+    logging.info("in send_picturepath collection_id is {}".format(collection_id))
+    my_collection= MyCollection.get_by_id(collection_id)
+    my_collection.picturepath= picturepath
+    my_collection.save()
+    return Redirect('/collections')
 
 
 if __name__ == '__main__':
-    # make a list of all photos in collection.picturepath
 
-    mycollection = MyCollection.select()
-    for coll in mycollection:
-        print('title: ', coll.title, coll.picturepath )
-        print('owner: ', coll.owner.name )
+    find_photos(1, '/bodb/gelada')
