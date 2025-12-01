@@ -1,3 +1,0 @@
-206
-title = Laughing (Palm) Dove
-foreign = True

@@ -1,3 +1,0 @@
-602
-title = Ruppel's Starling
-foreign = True
