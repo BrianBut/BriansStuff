@@ -20,7 +20,7 @@ def before(req, sess):
         return login_redir
 
 # Beforeware objects require the function itself, and optionally a list of regexes to skip.
-bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
+bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', r'/home/brian/Pictures/bodb/.*', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
 
 app, rt = fast_app(
     pico=True,
@@ -30,7 +30,7 @@ app, rt = fast_app(
 
 rt_essay.to_app(app)
 rt_todo.to_app(app)
-rt_mycollections.to_app(app)
+#rt_mycollections.to_app(app)
 
 # Any Starlette response class can be returned by a FastHTML route handler.
 login_redir = RedirectResponse('/login', status_code=303)
@@ -96,7 +96,7 @@ def send_register(name:str, pword:str, email:str, fullname:str):
 @rt("/home")
 @rt("/") 
 def index(session):
-    nav_items=['Essays', 'Collections'] # also 'Birds' etc
+    nav_items=['Essays']
     try:
         if session['auth'] == 'Admin':
             nav_items.append('Todos')

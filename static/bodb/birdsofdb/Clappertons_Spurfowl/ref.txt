@@ -1,0 +1,3 @@
+126
+title = Clapperton's Spurfowl (Francolin)
+foreign = True
