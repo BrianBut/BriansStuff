@@ -20,12 +20,13 @@ def before(req, sess):
         return login_redir
 
 # Beforeware objects require the function itself, and optionally a list of regexes to skip.
-bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'.*\.css', r'/home/brian/Pictures/bodb/.*', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
+bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', r'/mystyles.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
 
 app, rt = fast_app(
     pico=True,
     hdrs= (MarkdownJS(), HighlightJS(langs=['python', 'javascript', 'html', 'css']), Link(rel='stylesheet', href='/mystyles.css', type='text/css')),
     before= bware,
+    title= "Brian's Stuff",
     )
 
 rt_essay.to_app(app)

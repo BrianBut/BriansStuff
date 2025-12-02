@@ -90,7 +90,6 @@ def get(essay_id:int):
         )
     return (Titled('Edit Essay Title or Header', form))
 
-#OK
 @rt
 def send_edit_essay_header( essay_id:int, title:str, preamble:str):
     essay= Essay.get_by_id(essay_id)
@@ -101,7 +100,6 @@ def send_edit_essay_header( essay_id:int, title:str, preamble:str):
     essay.save()
     return RedirectResponse( '/essays/essay/{}'.format(essay_id), status_code=303)
 
-#OK
 @rt("/edit-essay-content/{essay_id}")
 def get(essay_id: int):
     essay = Essay.get_by_id(essay_id)
@@ -114,13 +112,33 @@ def get(essay_id: int):
         )
     return (Titled('Edit Essay Content', form))
 
-#OK
 @rt
 def send_essay_content(essay_id:int, content:str):
     essay = Essay.get_by_id(essay_id)
     essay.content= content
     essay.last_edited= datetime.now(timezone.utc)
     logging.info('about to save essay {}'.format(essay_id))
+    essay.save()
+    return RedirectResponse('/essays/essay/{}'.format(essay_id), status_code=303)
+
+@rt("/edit-essay-title/{essay_id}")
+def get(essay_id:int):
+    essay = Essay.get_by_id(essay_id)
+    logging.info('In edit_essay_title get {}'.format(essay))
+    form=Form(action=send_essay_title, method='post')(
+        Hidden(essay_id, name='essay_id'),
+        Textarea(essay.title, name='title', rows=2),
+        Button("Apply Changes"),
+        Span(id="error", style="color:red"),
+        )
+    return (Titled('Edit Essay Content', form))
+
+@rt
+def send_essay_title(essay_id:int, title:str):
+    essay = Essay.get_by_id(essay_id)
+    essay.title= title
+    essay.last_edited= datetime.now(timezone.utc)
+    logging.info('about to save essay title {}'.format(essay_id))
     essay.save()
     return RedirectResponse('/essays/essay/{}'.format(essay_id), status_code=303)
 
@@ -133,8 +151,9 @@ def get(id:int, session):
         Hr(Small(essay.preamble)),
         Hr(),
         Div(essay.content, cls="marked"),
-        A('Edit Content', href="/essays/edit-essay-content/{}".format(essay.id)),
-        Linked_label('Edit Preamble', href="/essays/edit_essay_header/{}".format(essay.id))
+        A('Edit Title', href="/essays/edit-essay-title/{}".format(essay.id)),
+        Linked_label('Edit Content', href="/essays/edit-essay-content/{}".format(essay.id)),
+        Linked_label('Edit Preamble', href="/essays/edit_essay_title/{}".format(essay.id))
         ))
 
 if __name__ == '__main__':
