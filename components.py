@@ -28,7 +28,6 @@ def common_header(nav_items: list[str], title, session):
     else:
         buttons.append(A(Button('Login'), href='/login'))
     buttons.insert(0, H1(title))
-    #logging.info("In common_header buttons are {}".format(buttons))
     return Container( Nav( *buttons ),)
 
 #preceeds and interposes hrs between items in a list
@@ -41,7 +40,7 @@ def hr_separated( items):
 
 #fixed width link. Text within is left justified - see mystyles.css
 def Linked_label( text, href):
-    return( Div(A(text, href='{}'.format(href)), id='title_box'))
+    return( Div(A(text, href='{}'.format(href), style="width: 30em, text-align: left")))
 
 def AifEqual( var1, var2, title, href ):
     logging.info("var1 is {}, var2 is {}".format(var1,var2))
@@ -82,12 +81,10 @@ def ButtonifLoggedIn( var1, style, title, href):
         return A(Button(title), href=href)
 
 def ButtonRight(title, href):
-    return Div(A( Button(title, href='#'), href=href), id='label_right')
+    return Div(A( Button(title, href='#'), href=href), style='text-align:right')
 
 if __name__ == '__main__':
     dt = datetime.now(timezone.utc)
     logging.info("datetime is {}".format(dt))
     logging.info("date is {}".format(dt.date()))
     print(dt.strftime("%a %d %b %Y"))
-
-    #print(datestring('2025-11-05 02:31:14.620199+00:00'))

@@ -8,19 +8,9 @@
   grid-template-columns: auto auto auto auto;
   padding: 5px;
   gap: 5px;
-  /*color: green;*/
   justify-content: space-evenly;
 }
 
 #label_right {
     text-align: right;
 }
-/*
-.essay div {
-  background-color: #f1f1f1;
-  color:#000;
-  padding: 10px;
-  font-size: 30px;
-  text-align: center;
-}
-*/

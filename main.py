@@ -20,11 +20,11 @@ def before(req, sess):
         return login_redir
 
 # Beforeware objects require the function itself, and optionally a list of regexes to skip.
-bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', '/static/mystyles.css', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
+bware = Beforeware(before, skip=[r'/favicon\.ico', r'/static/.*', '/', '/login', '/send_login', '/register', '/send_register', r'/essay/.*'])
 
 app, rt = fast_app(
     pico=True,
-    hdrs= (MarkdownJS(), HighlightJS(langs=['python', 'javascript', 'html', 'css']), Link(rel='stylesheet', href='/static/mystyles.css', type='text/css')),
+    hdrs= (MarkdownJS(), HighlightJS(langs=['python', 'javascript', 'html', 'css'])),
     before= bware,
     title= "Brian's Stuff",
     )
@@ -65,7 +65,6 @@ def send_login(name:str, pwd:str, sess):
     res = (User.update({User.last_login: datetime.now(timezone.utc)}).where(User.name == name).execute())
     sess['auth'] = name
     sess['uid'] = u.id
-    #logging.info("set sess to 'auth': {}, 'uid': {}".format(sess['auth'], sess['uid']))
     return RedirectResponse('/', status_code=303)
 
 @rt
